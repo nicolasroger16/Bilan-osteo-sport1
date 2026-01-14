@@ -1,0 +1,24 @@
+{
+  "name": "bilan-osteo-sport",
+  "version": "1.0.0",
+  "description": "Application professionnelle de bilan ostéopathique pour le sport",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "android": "npx cap open android",
+    "sync": "npx cap sync android"
+  },
+  "keywords": [
+    "osteopathie",
+    "sport",
+    "bilan",
+    "medical"
+  ],
+  "author": "Nicolas",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/core": "^5.5.1",
+    "@capacitor/android": "^5.5.1",
+    "@capacitor/cli": "^5.5.1"
+  }
+}

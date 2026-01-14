@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Assistant professionnel de bilan ostéopathique">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bilan Ostéo">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Assistant Clinique Ostéopathie</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .install-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        .install-banner.show {
+            display: flex;
+        }
+        .install-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .install-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .close-banner {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        .content {
+            padding: 40px;
+        }
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .btn {
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.6);
+        }
+        .btn:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .btn-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .colored-section {
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid;
+        }
+        .section-blue { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-color: #2196F3; }
+        .section-green { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-color: #4CAF50; }
+        .section-purple { background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-color: #9C27B0; }
+        .section-orange { background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-color: #FF9800; }
+        .section-red { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-color: #f44336; }
+        .section-pink { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border-color: #E91E63; }
+        .section-teal { background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); border-color: #009688; }
+        .section-title {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .lesion-box {
+            background: rgba(255,255,255,0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 2px dashed #999;
+        }
+        .lesion-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .summary-container {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 15px;
+            border: 3px solid #667eea;
+        }
+        .summary-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .summary-text {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border: 2px solid #ddd;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 999;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+        .orthese-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .orthese-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+        .orthese-header {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .detail-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .info-banner {
+            margin-top: 30px;
+            padding: 15px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 4px solid #2196F3;
+            border-radius: 8px;
+            color: #1565c0;
+            font-size: 0.95rem;
+        }
+        .info-banner strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-3 { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+            .content { padding: 20px; }
+            .install-banner {
+                left: 10px;
+                right: 10px;
+                transform: none;
+                bottom: 10px;
+            }
+            .install-banner.show {
+                transform: none;
+            }
+            @keyframes slideUp {
+                from { transform: translateY(100px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="install-banner" id="installBanner">
+        <span>📱 Installer l'application sur votre appareil</span>
+        <button class="install-btn" id="installBtn">Installer</button>
+        <button class="close-banner" id="closeBanner">×</button>
+    </div>
+
+    <div class="app-container">
+        <div class="header">
+            <h1>🦴 Assistant Clinique Ostéopathie</h1>
+            <p>Outil professionnel de bilan ostéopathique</p>
+        </div>
+        <div class="content" id="app"></div>
+    </div>
+    <div class="save-indicator" id="saveIndicator">✅ Données sauvegardées</div>
+
+    <script>
+        // PWA Installation
+        let deferredPrompt;
+        const installBanner = document.getElementById('installBanner');
+        const installBtn = document.getElementById('installBtn');
+        const closeBanner = document.getElementById('closeBanner');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBanner.classList.add('show');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBanner.classList.remove('show');
+            }
+        });
+
+        closeBanner.addEventListener('click', () => {
+            installBanner.classList.remove('show');
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker enregistré', reg))
+                .catch(err => console.log('Erreur Service Worker', err));
+        }
+
+        // Application Logic
+        let currentStep = 0;
+        let showingSummary = false;
+        
+        const data = {
+            nom: '', prenom: '', poids: '', taille: '', age: '', sport: '', mainDominante: '',
+            semelles: '', semellesMotif: '', semellesCause: '',
+            orthodontie: '', orthodontieMotif: '', orthodontieCause: '',
+            lunettes: '', lunettesMotif: '', lunettesCause: '',
+            atmTrauma: '', atmCraquements: '', atmBruxisme: '', commotion: '', mauxTete: '', sommeil: '', pbORL: '',
+            visceralEstomac: '', pbRenaux: '', pbHepatiques: '', pbCardio: '', pbPulmonaire: '', pbCirculatoire: '', nevralgies: '',
+            plainte: '', traitements: '',
+            testFlexionDebout: '', testUnipodal: '', jambe: '',
+            testGMCEpaules: '', stabiliteEpaule: '', mobiliteThoracique: '', mobiliteCotes: '',
+            pied_mobiliteGlobale: '', pied_metatarsoPhal: '', pied_chopart: '', pied_lisfranc: '',
+            cheville_mobiliteGlobale: '', cheville_sousTalienne: '', cheville_tibioTalienne: '', cheville_peroneoTibiale: '',
+            genou_mobiliteGlobale: '', genou_lateralites: '', genou_tiroirAnt: '', genou_tiroirPost: '', genou_qualiteRotation: '',
+            hanche_mobiliteGlobale: '', hanche_centrageTete: '', hanche_glissementAnt: '', hanche_glissementPost: '',
+            lombaire_mobiliteGlobale: '', lombaire_lesionExtension: '', lombaire_lesionFlexion: '', lombaire_pompageDisque: '',
+            bassin_anteversion: '', bassin_retroversion: '', bassin_sacrum: '', bassin_iliaque: '',
+            cervicale_mobiliteGlobale: '', cervicale_lesionExtension: '', cervicale_lesionFlexion: '', cervicale_pompageDisque: '',
+            testGMCInf: '', palpationAbdomen: '', bilanCranien: '',
+            testCharnieres: '', palpationEpaule: '', fascias: '', pompageSacrum: '', pompageDiscal: ''
+        };
+
+        function loadData() {
+            const saved = localStorage.getItem('osteo_bilan_data');
+            if (saved) {
+                Object.assign(data, JSON.parse(saved));
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('osteo_bilan_data', JSON.stringify(data));
+            const indicator = document.getElementById('saveIndicator');
+            indicator.style.display = 'block';
+            setTimeout(() => indicator.style.display = 'none', 2000);
+        }
+
+        function updateData(field, value) {
+            data[field] = value;
+            saveData();
+        }
+
+        function generateSummary() {
+            return `**Nom ${data.nom}** **Prénom ${data.prenom}**
+**Poids ${data.poids}kg** **Taille ${data.taille}cm** **Age ${data.age}ans**
+**Sport ${data.sport}** **Main ${data.mainDominante}**
+
+**Orthèses**: 
+Semelles: ${data.semelles}${data.semelles === 'Oui' ? ` - Cause: ${data.semellesCause || 'Non précisée'} / Depuis: ${data.semellesMotif || 'Non précisé'}` : ''}
+Orthodontie: ${data.orthodontie}${data.orthodontie === 'Oui' ? ` - Cause: ${data.orthodontieCause || 'Non précisée'} / Date: ${data.orthodontieMotif || 'Non précisée'}` : ''}
+Lunettes: ${data.lunettes}${data.lunettes === 'Oui' ? ` - Cause: ${data.lunettesCause || 'Non précisée'} / Depuis: ${data.lunettesMotif || 'Non précisé'}` : ''}
+
+**Problèmes généraux**
+ATM: ${data.atmTrauma || '0'} / ${data.atmCraquements || '0'} / ${data.atmBruxisme || '0'}
+Crânien: Commotion ${data.commotion || '0'} / Sommeil ${data.sommeil}
+Viscéral: ${data.visceralEstomac || '0'} / ORL: ${data.pbORL || '0'}
+
+**Traitements**: ${data.traitements || 'Aucun'}
+
+**BILAN**
+DEBOUT: ${data.testFlexionDebout}
+ASSIS: GMC ${data.testGMCEpaules} / Côtes ${data.mobiliteCotes}
+DORSAL:
+  PIED: ${data.pied_mobiliteGlobale} - Lésions: MP ${data.pied_metatarsoPhal}
+  CHEVILLE: ${data.cheville_mobiliteGlobale} - Lésions: ST ${data.cheville_sousTalienne}
+  GENOU: ${data.genou_mobiliteGlobale} - Lésions: Lat ${data.genou_lateralites}
+  HANCHE: ${data.hanche_mobiliteGlobale} - Lésions: Centrage ${data.hanche_centrageTete}
+  LOMBAIRE: ${data.lombaire_mobiliteGlobale} - Lésions: Ext ${data.lombaire_lesionExtension} / Flex ${data.lombaire_lesionFlexion}
+  BASSIN: Antév ${data.bassin_anteversion} / Sacrum ${data.bassin_sacrum}
+  CERVICALE: ${data.cervicale_mobiliteGlobale} - Lésions: Ext ${data.cervicale_lesionExtension} / Flex ${data.cervicale_lesionFlexion}
+VENTRAL: Charnières ${data.testCharnieres}
+
+Date: ${new Date().toLocaleDateString('fr-FR')}`;
+        }
+
+        const steps = [
+            {
+                title: "Profil & Plainte",
+                emoji: "👤",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">Nom</label>
+                        <input type="text" class="form-input" value="${data.nom}" onchange="updateData('nom', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prénom</label>
+                        <input type="text" class="form-input" value="${data.prenom}" onchange="updateData('prenom', this.value)">
+                    </div>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label class="form-label">Âge</label>
+                            <input type="number" class="form-input" value="${data.age}" onchange="updateData('age', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Poids (kg)</label>
+                            <input type="number" class="form-input" value="${data.poids}" onchange="updateData('poids', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Taille (cm)</label>
+                            <input type="number" class="form-input" value="${data.taille}" onchange="updateData('taille', this.value)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sport / Activité</label>
+                        <input type="text" class="form-input" value="${data.sport}" onchange="updateData('sport', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Main dominante</label>
+                        <select class="form-select" onchange="updateData('mainDominante', this.value)">
+                            <option value="" ${data.mainDominante === '' ? 'selected' : ''}>Sélectionner...</option>
+                            <option value="Droite" ${data.mainDominante === 'Droite' ? 'selected' : ''}>Droite</option>
+                            <option value="Gauche" ${data.mainDominante === 'Gauche' ? 'selected' : ''}>Gauche</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Plainte principale</label>
+                        <textarea class="form-textarea" rows="4" onchange="updateData('plainte', this.value)">${data.plainte}</textarea>
+                    </div>
+                `
+            },
+            {
+                title: "Entrées Sensorielles",
+                emoji: "👁️",
+                render: () => `
+                    <div class="orthese-section">
+                        <div class="orthese-header">👟 Semelles orthopédiques</div>
+                        <div class="form-group">
+                            <label class="form-label">Le patient porte-t-il des semelles ?</label>
+                            <select class="form-select" onchange="updateData('semelles', this.value); render();">
+                                <option value="" ${data.semelles === '' ? 'selected' : ''}>Sélectionner...</option>
+                                <option value="0" ${data.semelles === '0' ? 'selected' : ''}>Non (0)</option>
+                                <option value="Oui" ${data.semelles === 'Oui' ? 'selected' : ''}>Oui</option>
+                            </select>
+                        </div>
+                        ${data.semelles === 'Oui' ? `
+                            <div class="detail-box">
+                                <div class="form-group">
+                                    <label class="detail-label">💡 Cause / Raison de prescription</label>
+                                    <input type="text" class="form-input" placeholder="Ex: Pied plat, pronation, supination, valgus, inégalité de longueur..." value="${data.semellesCause}" onchange="updateData('semellesCause', this.value)">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="detail-label">📅 Depuis quand / Période</label>
+                                    <input type="text" class="form-input" placeholder="Ex: 2 ans, depuis 2020, depuis l'enfance, 6 mois..." value="${data.semellesMotif}" onchange="updateData('semellesMotif', this.value)">
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="orthese-section">
+                        <div class="orthese-header">🦷 Orthodontie</div>
+                        <div class="form-group">
+                            <label class="form-label">Le patient a-t-il eu un traitement orthodontique ?</label>
+                            <select class="form-select" onchange="updateData('orthodontie', this.value); render();">
+                                <option value="" ${data.orthodontie === '' ? 'selected' : ''}>Sélectionner...</option>
+                                <option value="0" ${data.orthodontie === '0' ? 'selected' : ''}>Non (0)</option>
+                                <option value="Oui" ${data.orthodontie === 'Oui' ? 'selected' : ''}>Oui</option>
+                            </select>
+                        </div>
+                        ${data.orthodontie === 'Oui' ? `
+                            <div class="detail-box">
+                                <div class="form-group">
+                                    <label class="detail-label">💡 Cause / Raison du traitement</label>
+                                    <input type="text" class="form-input" placeholder="Ex: Malocclusion, chevauchement dentaire, prognathie, rétrognathie..." value="${data.orthodontieCause}" onchange="updateData('orthodontieCause', this.value)">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="detail-label">📅 Date / Période du traitement</label>
+                                    <input type="text" class="form-input" placeholder="Ex: 2018-2020, adolescence, en cours, terminé il y a 5 ans..." value="${data.orthodontieMotif}" onchange="updateData('orthodontieMotif', this.value)">
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="orthese-section">
+                        <div class="orthese-header">👓 Lunettes / Correction visuelle</div>
+                        <div class="form-group">
+                            <label class="form-label">Le patient porte-t-il des lunettes ?</label>
+                            <select class="form-select" onchange="updateData('lunettes', this.value); render();">
+                                <option value="" ${data.lunettes === '' ? 'selected' : ''}>Sélectionner...</option>
+                                <option value="0" ${data.lunettes === '0' ? 'selected' : ''}>Non (0)</option>
+                                <option value="Oui" ${data.lunettes === 'Oui' ? 'selected' : ''}>Oui</option>
+                            </select>
+                        </div>
+                        ${data.lunettes === 'Oui' ? `
+                            <div class="detail-box">
+                                <div class="form-group">
+                                    <label class="detail-label">💡 Cause / Type de correction</label>
+                                    <input type="text" class="form-input" placeholder="Ex: Myopie, hypermétropie, astigmatisme, presbytie..." value="${data.lunettesCause}" onchange="updateData('lunettesCause', this.value)">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="detail-label">📅 Depuis quand / Période</label>
+                                    <input type="text" class="form-input" placeholder="Ex: 5 ans, depuis l'enfance, récent, depuis 2015..." value="${data.lunettesMotif}" onchange="updateData('lunettesMotif', this.value)">
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="info-banner">
+                        <strong>ℹ️ Information importante</strong>
+                        Ces données permettent d'évaluer l'impact des entrées sensorielles (podales, occlusales, visuelles) sur la posture globale et l'équilibre du patient.
+                    </div>
+                `
+            },
+            {
+                title: "Systèmes Généraux",
+                emoji: "🧠",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">ATM - Traumatismes mandibule</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.atmTrauma}" onchange="updateData('atmTrauma', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ATM - Craquements / Malocclusion</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.atmCraquements}" onchange="updateData('atmCraquements', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bruxisme</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.atmBruxisme}" onchange="updateData('atmBruxisme', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Commotion cérébrale</label>
+                        <input type="text" class="form-input" placeholder="Nombre et séquelles, ou 0" value="${data.commotion}" onchange="updateData('commotion', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Maux de tête</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.mauxTete}" onchange="updateData('mauxTete', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sommeil</label>
+                        <input type="text" class="form-input" placeholder="Ex: 8h/nuit" value="${data.sommeil}" onchange="updateData('sommeil', this.value)">
+                    </div>
+                `
+            },
+            {
+                title: "Sphère Viscérale",
+                emoji: "🫀",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">Estomac / Digestion / Transit</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.visceralEstomac}" onchange="updateData('visceralEstomac', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Problèmes rénaux</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.pbRenaux}" onchange="updateData('pbRenaux', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Problèmes hépatiques</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.pbHepatiques}" onchange="updateData('pbHepatiques', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Problèmes cardio</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.pbCardio}" onchange="updateData('pbCardio', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Problèmes pulmonaires</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.pbPulmonaire}" onchange="updateData('pbPulmonaire', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Problèmes ORL</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.pbORL}" onchange="updateData('pbORL', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Problèmes circulatoires MI</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.pbCirculatoire}" onchange="updateData('pbCirculatoire', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Névralgies / Paresthésies</label>
+                        <input type="text" class="form-input" placeholder="0 si RAS" value="${data.nevralgies}" onchange="updateData('nevralgies', this.value)">
+                    </div>
+                `
+            },
+            {
+                title: "Historique",
+                emoji: "📋",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">Traitements en cours</label>
+                        <input type="text" class="form-input" placeholder="Kiné, Podo, Psy..." value="${data.traitements}" onchange="updateData('traitements', this.value)">
+                    </div>
+                    <p style="margin-top: 20px; color: #666; font-style: italic;">
+                        💡 Astuce: Pour ajouter des douleurs, blessures et chirurgies détaillées, utilisez le document Word fourni ou les champs de notes complémentaires.
+                    </p>
+                `
+            },
+            {
+                title: "Observation Debout",
+                emoji: "🧍",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">Test de flexion debout</label>
+                        <textarea class="form-textarea" rows="3" placeholder="Scoliose, Distance doigts-sol, Lordose..." onchange="updateData('testFlexionDebout', this.value)">${data.testFlexionDebout}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Test de flexion unipodal</label>
+                        <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.testUnipodal}" onchange="updateData('testUnipodal', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Longueur des jambes</label>
+                        <input type="text" class="form-input" placeholder="Ex: G<D ou RAS" value="${data.jambe}" onchange="updateData('jambe', this.value)">
+                    </div>
+                `
+            },
+            {
+                title: "Examen Assis",
+                emoji: "🪑",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">3 Tests GMC épaules</label>
+                        <input type="text" class="form-input" placeholder="Chandelier, Rétropulsion, Main-omoplate" value="${data.testGMCEpaules}" onchange="updateData('testGMCEpaules', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stabilité épaule</label>
+                        <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.stabiliteEpaule}" onchange="updateData('stabiliteEpaule', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobilité thoracique</label>
+                        <input type="text" class="form-input" placeholder="Rotation G/D limitée?" value="${data.mobiliteThoracique}" onchange="updateData('mobiliteThoracique', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobilité côtes</label>
+                        <input type="text" class="form-input" placeholder="RAS ou restrictions" value="${data.mobiliteCotes}" onchange="updateData('mobiliteCotes', this.value)">
+                    </div>
+                `
+            },
+            {
+                title: "Décubitus Dorsal",
+                emoji: "🛏️",
+                render: () => `
+                    <div class="colored-section section-blue">
+                        <div class="section-title">🦶 PIED</div>
+                        <div class="form-group">
+                            <label class="form-label">Mobilité globale</label>
+                            <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.pied_mobiliteGlobale}" onchange="updateData('pied_mobiliteGlobale', this.value)">
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Lésions ostéopathiques</div>
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Métatarso-phal.</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.pied_metatarsoPhal}" onchange="updateData('pied_metatarsoPhal', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Chopart</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.pied_chopart}" onchange="updateData('pied_chopart', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Lisfranc</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.pied_lisfranc}" onchange="updateData('pied_lisfranc', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colored-section section-green">
+                        <div class="section-title">🔗 CHEVILLE</div>
+                        <div class="form-group">
+                            <label class="form-label">Mobilité globale (Flexion/Extension)</label>
+                            <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.cheville_mobiliteGlobale}" onchange="updateData('cheville_mobiliteGlobale', this.value)">
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Lésions ostéopathiques</div>
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Sous-talienne</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.cheville_sousTalienne}" onchange="updateData('cheville_sousTalienne', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Tibio-talienne</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.cheville_tibioTalienne}" onchange="updateData('cheville_tibioTalienne', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Péronéo-tibiale</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.cheville_peroneoTibiale}" onchange="updateData('cheville_peroneoTibiale', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colored-section section-purple">
+                        <div class="section-title">🦵 GENOU</div>
+                        <div class="form-group">
+                            <label class="form-label">Mobilité globale (Flexion/Extension)</label>
+                            <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.genou_mobiliteGlobale}" onchange="updateData('genou_mobiliteGlobale', this.value)">
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Lésions ostéopathiques</div>
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Latéralités</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.genou_lateralites}" onchange="updateData('genou_lateralites', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Tiroir antérieur</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.genou_tiroirAnt}" onchange="updateData('genou_tiroirAnt', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Tiroir postérieur</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.genou_tiroirPost}" onchange="updateData('genou_tiroirPost', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colored-section section-orange">
+                        <div class="section-title">🔄 HANCHE</div>
+                        <div class="form-group">
+                            <label class="form-label">Mobilité globale</label>
+                            <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.hanche_mobiliteGlobale}" onchange="updateData('hanche_mobiliteGlobale', this.value)">
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Lésions ostéopathiques</div>
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Centrage tête</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.hanche_centrageTete}" onchange="updateData('hanche_centrageTete', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Gliss. antérieur</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.hanche_glissementAnt}" onchange="updateData('hanche_glissementAnt', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Gliss. postérieur</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.hanche_glissementPost}" onchange="updateData('hanche_glissementPost', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colored-section section-red">
+                        <div class="section-title">🔀 LOMBAIRE</div>
+                        <div class="form-group">
+                            <label class="form-label">Mouvement global</label>
+                            <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.lombaire_mobiliteGlobale}" onchange="updateData('lombaire_mobiliteGlobale', this.value)">
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Lésions ostéopathiques</div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Lésions en extension</label>
+                                    <input type="text" class="form-input" placeholder="Ex: L3 en ERS D" value="${data.lombaire_lesionExtension}" onchange="updateData('lombaire_lesionExtension', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Lésions en flexion</label>
+                                    <input type="text" class="form-input" placeholder="Ex: L4 en FRS G" value="${data.lombaire_lesionFlexion}" onchange="updateData('lombaire_lesionFlexion', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 0.85rem;">Pompage du disque</label>
+                                <input type="text" class="form-input" placeholder="Niveau et observations" value="${data.lombaire_pompageDisque}" onchange="updateData('lombaire_pompageDisque', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colored-section section-pink">
+                        <div class="section-title">⚡ BASSIN</div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Antéversion</label>
+                                <input type="text" class="form-input" placeholder="RAS" value="${data.bassin_anteversion}" onchange="updateData('bassin_anteversion', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rétroversion</label>
+                                <input type="text" class="form-input" placeholder="RAS" value="${data.bassin_retroversion}" onchange="updateData('bassin_retroversion', this.value)">
+                            </div>
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Qualité du mouvement</div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Sacrum</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.bassin_sacrum}" onchange="updateData('bassin_sacrum', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Iliaque</label>
+                                    <input type="text" class="form-input" placeholder="RAS" value="${data.bassin_iliaque}" onchange="updateData('bassin_iliaque', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colored-section section-teal">
+                        <div class="section-title">🦴 CERVICALE</div>
+                        <div class="form-group">
+                            <label class="form-label">Mouvement global</label>
+                            <input type="text" class="form-input" placeholder="RAS ou observations" value="${data.cervicale_mobiliteGlobale}" onchange="updateData('cervicale_mobiliteGlobale', this.value)">
+                        </div>
+                        <div class="lesion-box">
+                            <div class="lesion-title">Lésions ostéopathiques</div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Lésions en extension (ERS)</label>
+                                    <input type="text" class="form-input" placeholder="Ex: C3 en ERS D" value="${data.cervicale_lesionExtension}" onchange="updateData('cervicale_lesionExtension', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 0.85rem;">Lésions en flexion (FRS)</label>
+                                    <input type="text" class="form-input" placeholder="Ex: C4 en FRS G" value="${data.cervicale_lesionFlexion}" onchange="updateData('cervicale_lesionFlexion', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 0.85rem;">Pompage du disque</label>
+                                <input type="text" class="form-input" placeholder="Niveau et observations" value="${data.cervicale_pompageDisque}" onchange="updateData('cervicale_pompageDisque', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">3 Tests GMC M inf</label>
+                        <input type="text" class="form-input" placeholder="Ischio, Add, Psoas" value="${data.testGMCInf}" onchange="updateData('testGMCInf', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Palpation abdomen</label>
+                        <input type="text" class="form-input" placeholder="État viscéral" value="${data.palpationAbdomen}" onchange="updateData('palpationAbdomen', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bilan crânien</label>
+                        <input type="text" class="form-input" placeholder="Test ATM, os de la face" value="${data.bilanCranien}" onchange="updateData('bilanCranien', this.value)">
+                    </div>
+                `
+            },
+            {
+                title: "Décubitus Ventral",
+                emoji: "🛌",
+                render: () => `
+                    <div class="form-group">
+                        <label class="form-label">Test charnières</label>
+                        <textarea class="form-textarea" rows="3" placeholder="C/T, T/L, L/S - Iliaque post?" onchange="updateData('testCharnieres', this.value)">${data.testCharnieres}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Palpation post épaule</label>
+                        <input type="text" class="form-input" placeholder="0 ou observations" value="${data.palpationEpaule}" onchange="updateData('palpationEpaule', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Évaluation des fascias</label>
+                        <textarea class="form-textarea" rows="2" placeholder="Cervical, Sacro-lombaire..." onchange="updateData('fascias', this.value)">${data.fascias}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pompage sacrum / Test sacro-iliaque</label>
+                        <input type="text" class="form-input" placeholder="Observations" value="${data.pompageSacrum}" onchange="updateData('pompageSacrum', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pompage discal</label>
+                        <input type="text" class="form-input" placeholder="Observations" value="${data.pompageDiscal}" onchange="updateData('pompageDiscal', this.value)">
+                    </div>
+                `
+            }
+        ];
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (showingSummary) {
+                app.innerHTML = `
+                    <div class="summary-container">
+                        <div class="summary-title">📋 Bilan Patient</div>
+                        <div class="btn-group">
+                            <button class="btn btn-success" onclick="copySummary()">📋 Copier le bilan</button>
+                            <button class="btn btn-secondary" onclick="showingSummary = false; render();">← Retour</button>
+                            <button class="btn btn-secondary" onclick="resetData()">🔄 Nouveau patient</button>
+                        </div>
+                        <div class="summary-text">${generateSummary()}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const progress = ((currentStep + 1) / steps.length) * 100;
+            
+            app.innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span><strong>Étape ${currentStep + 1} sur ${steps.length}</strong></span>
+                        <span>${steps[currentStep].emoji} ${steps[currentStep].title}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">${steps[currentStep].emoji} ${steps[currentStep].title}</div>
+                    ${steps[currentStep].render()}
+                </div>
+
+                <div class="btn-nav">
+                    <button class="btn btn-secondary" onclick="prevStep()" ${currentStep === 0 ? 'disabled' : ''}>
+                        ← Précédent
+                    </button>
+                    ${currentStep < steps.length - 1 
+                        ? '<button class="btn btn-primary" onclick="nextStep()">Suivant →</button>'
+                        : '<button class="btn btn-success" onclick="viewSummary()">📋 Générer le bilan</button>'}
+                </div>
+            `;
+        }
+
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                render();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                render();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function viewSummary() {
+            showingSummary = true;
+            render();
+            window.scrollTo(0, 0);
+        }
+
+        function copySummary() {
+            const summary = generateSummary();
+            navigator.clipboard.writeText(summary).then(() => {
+                alert('✅ Bilan copié dans le presse-papier !');
+            }).catch(() => {
+                alert('❌ Erreur de copie. Sélectionnez et copiez manuellement le texte.');
+            });
+        }
+
+        function resetData() {
+            if (confirm('⚠️ Êtes-vous sûr de vouloir effacer toutes les données et commencer un nouveau patient ?')) {
+                localStorage.removeItem('osteo_bilan_data');
+                Object.keys(data).forEach(key => data[key] = '');
+                currentStep = 0;
+                showingSummary = false;
+                render();
+                alert('✅ Données effacées ! Nouveau patient prêt.');
+            }
+        }
+
+        loadData();
+        render();
+    </script>
+</body>
+</html>
